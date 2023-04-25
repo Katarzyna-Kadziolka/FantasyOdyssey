@@ -13,51 +13,51 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('LoginPage'),
-        backgroundColor: Color(0xFF009A45),
+        backgroundColor: const Color(0xFF009A45),
       ),
-      body: Center(child: Obx(() {
-        if (loginController.googleAccount.value == null) return buildLoginButton();
-        return const MainPage();
-      })),
+      body: Center(
+          child: FloatingActionButton.extended(
+        onPressed: () {
+          loginController.login();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainPage(),
+            ),
+          );
+        },
+        icon: Image.asset(
+          'images/google_logo.png',
+          height: 32,
+          width: 32,
+        ),
+        label: const Text('Sign in with Google'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      )),
     );
   }
 
-  FloatingActionButton buildLoginButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        loginController.login();
-      },
-      icon: Image.asset(
-        'images/google_logo.png',
-        height: 32,
-        width: 32,
-      ),
-      label: const Text('Sign in with Google'),
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-    );
-  }
-
-  // Column buildSummaryPage() {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       CircleAvatar(
-  //         backgroundImage:
-  //             Image.network(loginController.googleAccount.value?.photoUrl ?? '')
-  //                 .image,
-  //         radius: 100,
-  //       ),
-  //       Text(
-  //         loginController.googleAccount.value?.displayName ?? '',
-  //         style: Get.textTheme.headlineSmall,
-  //       ),
-  //       Text(
-  //         loginController.googleAccount.value?.email ?? '',
-  //         style: Get.textTheme.bodySmall,
-  //       ),
-  //       ElevatedButton(onPressed: () => activityController.getSteps(), child: const Text('Connect to Google Fit'))
-  //     ],
-  //   );
-  // }
+// Column buildSummaryPage() {
+//   return Column(
+//     mainAxisSize: MainAxisSize.min,
+//     children: [
+//       CircleAvatar(
+//         backgroundImage:
+//             Image.network(loginController.googleAccount.value?.photoUrl ?? '')
+//                 .image,
+//         radius: 100,
+//       ),
+//       Text(
+//         loginController.googleAccount.value?.displayName ?? '',
+//         style: Get.textTheme.headlineSmall,
+//       ),
+//       Text(
+//         loginController.googleAccount.value?.email ?? '',
+//         style: Get.textTheme.bodySmall,
+//       ),
+//       ElevatedButton(onPressed: () => activityController.getSteps(), child: const Text('Connect to Google Fit'))
+//     ],
+//   );
+// }
 }
