@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     Widget homeScreen = isLoggedIn ? const MainPage() : LoginPage();
 
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.green,

@@ -30,13 +30,17 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1F1B24),
+      appBar: currentIndex == 0 ? null : AppBar(
+        title: const Text("Fantasy Odyssey"),
+        backgroundColor: const Color(0xFF009A45),
+        automaticallyImplyLeading: false,
+      ),
       body: pages.elementAt(currentIndex),
       bottomNavigationBar: BottomNavigationBar(
           onTap: onTap,
           currentIndex: currentIndex,
-          backgroundColor: const Color(0xFF009A45),
-          selectedItemColor: const Color(0xFFe5f4e9),
+          backgroundColor: const Color(0xFF00695C),
+          selectedItemColor: const Color(0xFFE0F2F1),
           items: const <BottomNavigationBarItem> [
             BottomNavigationBarItem(
               label: "Journey",
