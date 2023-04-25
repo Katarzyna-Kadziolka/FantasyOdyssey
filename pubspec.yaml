@@ -39,6 +39,7 @@ dependencies:
   permission_handler: ^10.2.0
   google_sign_in: ^6.1.0
   get: ^4.6.5
+  shared_preferences: ^0.5.7+3
 
 dev_dependencies:
   flutter_test:
