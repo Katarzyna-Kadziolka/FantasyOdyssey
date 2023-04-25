@@ -1,7 +1,9 @@
+import 'package:fantasy_odyssey/Models/phase.dart';
+
 class HistoryEvent {
-  int distance;
+  double distance;
   String description;
-  String phase;
+  Phase phase;
 
   HistoryEvent(this.phase, this.distance, this.description);
 }
