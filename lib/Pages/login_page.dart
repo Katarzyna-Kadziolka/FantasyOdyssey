@@ -1,5 +1,6 @@
 import 'package:fantasy_odyssey/Controllers/activity_controller.dart';
 import 'package:fantasy_odyssey/Controllers/login_controller.dart';
+import 'package:fantasy_odyssey/Pages/NavPages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,10 +13,11 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('LoginPage'),
+        backgroundColor: Color(0xFF009A45),
       ),
       body: Center(child: Obx(() {
         if (loginController.googleAccount.value == null) return buildLoginButton();
-        return buildSummaryPage();
+        return const MainPage();
       })),
     );
   }
@@ -36,26 +38,26 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Column buildSummaryPage() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          backgroundImage:
-              Image.network(loginController.googleAccount.value?.photoUrl ?? '')
-                  .image,
-          radius: 100,
-        ),
-        Text(
-          loginController.googleAccount.value?.displayName ?? '',
-          style: Get.textTheme.headlineSmall,
-        ),
-        Text(
-          loginController.googleAccount.value?.email ?? '',
-          style: Get.textTheme.bodySmall,
-        ),
-        ElevatedButton(onPressed: () => activityController.getSteps(), child: const Text('Connect to Google Fit'))
-      ],
-    );
-  }
+  // Column buildSummaryPage() {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       CircleAvatar(
+  //         backgroundImage:
+  //             Image.network(loginController.googleAccount.value?.photoUrl ?? '')
+  //                 .image,
+  //         radius: 100,
+  //       ),
+  //       Text(
+  //         loginController.googleAccount.value?.displayName ?? '',
+  //         style: Get.textTheme.headlineSmall,
+  //       ),
+  //       Text(
+  //         loginController.googleAccount.value?.email ?? '',
+  //         style: Get.textTheme.bodySmall,
+  //       ),
+  //       ElevatedButton(onPressed: () => activityController.getSteps(), child: const Text('Connect to Google Fit'))
+  //     ],
+  //   );
+  // }
 }
