@@ -4,9 +4,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ActivityController extends GetxController {
 
-  getSteps() async {
+  Future<int> getStepsAsync(DateTime lastUpdate) async {
     await Permission.activityRecognition.request();
-    // create a HealthFactory for use in the app
+
     HealthFactory health = HealthFactory();
 
     // define the types to get
@@ -18,6 +18,8 @@ class ActivityController extends GetxController {
     bool requested = await health.requestAuthorization(types);
 
     var now = DateTime.now();
-    var steps2 = await health.getTotalStepsInInterval(now.subtract(Duration(days: 1)), now);
+    var dateOne = now.subtract(Duration(days: 1));
+    var result = await health.getTotalStepsInInterval(lastUpdate.toUtc(), now.toUtc());
+    return result ?? 0;
   }
 }

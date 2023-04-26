@@ -1,4 +1,9 @@
+import 'package:fantasy_odyssey/Models/saved_steps.dart';
+import 'package:fantasy_odyssey/Persistence/storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../Controllers/activity_controller.dart';
 
 class SummaryPage extends StatefulWidget {
   const SummaryPage({Key? key}) : super(key: key);
@@ -8,7 +13,31 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
+  final storage = Storage();
+  SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
+  final activityController = Get.put(ActivityController());
   @override
+  initState () {
+    super.initState();
+    storage.getSavedStepsAsync().then((value) => _handleStepChanged(value));
+  }
+  Future _handleStepChanged(SavedSteps savedSteps) async {
+    setState(() {
+      _savedSteps = savedSteps;
+    });
+
+    if(_savedSteps.updateTime == null) {
+      storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
+    }
+    else {
+      var steps = await activityController.getStepsAsync(_savedSteps.updateTime!);
+      _savedSteps = await storage.saveStepsAsync(SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
+      setState(() {
+        _savedSteps = _savedSteps;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints.expand(),
@@ -50,7 +79,7 @@ class _SummaryPageState extends State<SummaryPage> {
                         style: TextStyle(fontSize: 35),
                       ),
                       Text(
-                        "3200 steps",
+                        "${_savedSteps.steps.toString()} steps",
                         style: TextStyle(fontSize: 22),
                       ),
                     ],
