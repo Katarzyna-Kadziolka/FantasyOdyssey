@@ -32,7 +32,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: currentIndex == 0 ? null : AppBar(
         title: const Text("Fantasy Odyssey"),
-        backgroundColor: const Color(0xFF009A45),
+        backgroundColor: const Color(0xFF00695C),
         automaticallyImplyLeading: false,
       ),
       body: pages.elementAt(currentIndex),

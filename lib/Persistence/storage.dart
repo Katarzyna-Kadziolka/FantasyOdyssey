@@ -24,4 +24,20 @@ import 'package:shared_preferences/shared_preferences.dart';
     return savedSteps;
   }
 
+  Future resetSteps() async {
+     final prefs = await SharedPreferences.getInstance();
+     await prefs.remove('steps');
+     await prefs.remove('updateTime');
+  }
+
+  Future<double> getStepLengthAsync() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble('stepLength') ?? 0.00075;
+  }
+
+  Future saveStepLengthAsync(double stepLength) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('stepLength', stepLength);
+  }
+
 }

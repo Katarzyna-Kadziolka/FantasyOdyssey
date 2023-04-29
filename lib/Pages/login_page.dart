@@ -18,13 +18,14 @@ class LoginPage extends StatelessWidget {
       body: Center(
           child: FloatingActionButton.extended(
         onPressed: () {
-          loginController.login();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainPage(),
-            ),
-          );
+          loginController.login().whenComplete(() => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MainPage(),
+                  ),
+                )
+              });
         },
         icon: Image.asset(
           'images/google_logo.png',
@@ -37,27 +38,4 @@ class LoginPage extends StatelessWidget {
       )),
     );
   }
-
-// Column buildSummaryPage() {
-//   return Column(
-//     mainAxisSize: MainAxisSize.min,
-//     children: [
-//       CircleAvatar(
-//         backgroundImage:
-//             Image.network(loginController.googleAccount.value?.photoUrl ?? '')
-//                 .image,
-//         radius: 100,
-//       ),
-//       Text(
-//         loginController.googleAccount.value?.displayName ?? '',
-//         style: Get.textTheme.headlineSmall,
-//       ),
-//       Text(
-//         loginController.googleAccount.value?.email ?? '',
-//         style: Get.textTheme.bodySmall,
-//       ),
-//       ElevatedButton(onPressed: () => activityController.getSteps(), child: const Text('Connect to Google Fit'))
-//     ],
-//   );
-// }
 }

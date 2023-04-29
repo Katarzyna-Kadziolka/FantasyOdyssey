@@ -1,3 +1,4 @@
+import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Persistence/storage.dart';
 import 'package:flutter/material.dart';
@@ -15,23 +16,46 @@ class SummaryPage extends StatefulWidget {
 class _SummaryPageState extends State<SummaryPage> {
   final storage = Storage();
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
+  final SavedSteps _todaySteps = SavedSteps(
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+    0,
+  );
   final activityController = Get.put(ActivityController());
+  double _todayKm = 0;
+
   @override
-  initState () {
+  initState() {
     super.initState();
     storage.getSavedStepsAsync().then((value) => _handleStepChanged(value));
+    activityController
+        .getStepsAsync(_todaySteps.updateTime!)
+        .then((value) => setState(() {
+              _todaySteps.steps = value;
+            }));
+    storage.getStepLengthAsync().then((value) => {
+      setTodaySteps(value)
+    } );
   }
+
+  setTodaySteps(double stepLength) {
+    var converter = StepsConverter(stepLength);
+    setState(() {
+      _todayKm = converter.toKm(_todaySteps.steps);
+    });
+  }
+
   Future _handleStepChanged(SavedSteps savedSteps) async {
     setState(() {
       _savedSteps = savedSteps;
     });
 
-    if(_savedSteps.updateTime == null) {
+    if (_savedSteps.updateTime == null) {
       storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
-    }
-    else {
-      var steps = await activityController.getStepsAsync(_savedSteps.updateTime!);
-      _savedSteps = await storage.saveStepsAsync(SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
+    } else {
+      var steps =
+          await activityController.getStepsAsync(_savedSteps.updateTime!);
+      _savedSteps = await storage.saveStepsAsync(
+          SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
       setState(() {
         _savedSteps = _savedSteps;
       });
@@ -53,9 +77,8 @@ class _SummaryPageState extends State<SummaryPage> {
         margin: const EdgeInsets.only(bottom: 50),
         child: Card(
           color: const Color(0xFF00695C).withOpacity(0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25)
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           child: DefaultTextStyle(
             style: const TextStyle(color: Color(0xFFE0F2F1)),
             child: Padding(
@@ -75,11 +98,11 @@ class _SummaryPageState extends State<SummaryPage> {
                         style: TextStyle(fontSize: 15),
                       ),
                       Text(
-                        "6,8 km",
+                        "$_todayKm km",
                         style: TextStyle(fontSize: 35),
                       ),
                       Text(
-                        "${_savedSteps.steps.toString()} steps",
+                        "${_todaySteps.steps.toString()} steps",
                         style: TextStyle(fontSize: 22),
                       ),
                     ],
