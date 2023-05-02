@@ -1,4 +1,5 @@
 import 'package:fantasy_odyssey/Models/phase.dart';
+import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Persistence/steps_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,16 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   final _phases = Phase.values.map((e) => e.text).toList();
   final _stepsCache = Get.put(StepsCache());
+  var _steps = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    getSteps().then((value) => _steps = value.steps);
+  }
+  Future<SavedSteps> getSteps() async {
+    return await _stepsCache.getSavedStepsAsync();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(

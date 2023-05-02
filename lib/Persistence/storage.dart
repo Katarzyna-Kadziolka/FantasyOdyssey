@@ -2,12 +2,19 @@ import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
  class Storage {
+   late SharedPreferences _prefs;
+
+   Storage() {
+     _initSharedPreferences();
+   }
+
+   Future<void> _initSharedPreferences() async {
+     _prefs = await SharedPreferences.getInstance();
+   }
 
    Future<SavedSteps> getSavedStepsAsync() async {
-     final prefs = await SharedPreferences.getInstance();
-
-     var steps = prefs.getInt('steps') ?? 0;
-     var timeToConvert = prefs.getInt( 'updateTime');
+     var steps = _prefs.getInt('steps') ?? 0;
+     var timeToConvert = _prefs.getInt( 'updateTime');
 
      DateTime? updateTime;
      if(timeToConvert != null) {
@@ -18,26 +25,26 @@ import 'package:shared_preferences/shared_preferences.dart';
   }
 
   Future<SavedSteps> saveStepsAsync(SavedSteps savedSteps) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('steps', savedSteps.steps);
-    await prefs.setInt('updateTime', savedSteps.updateTime!.millisecondsSinceEpoch);
+    await _prefs.setInt('steps', savedSteps.steps);
+    await _prefs.setInt('updateTime', savedSteps.updateTime!.millisecondsSinceEpoch);
     return savedSteps;
   }
 
   Future resetSteps() async {
-     final prefs = await SharedPreferences.getInstance();
-     await prefs.remove('steps');
-     await prefs.remove('updateTime');
+     await _prefs.remove('steps');
+     await _prefs.remove('updateTime');
   }
 
   Future<double> getStepLengthAsync() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getDouble('stepLength') ?? 0.00075;
+    return _prefs.getDouble('stepLength') ?? 0.00075;
   }
 
   Future saveStepLengthAsync(double stepLength) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('stepLength', stepLength);
+    await _prefs.setDouble('stepLength', stepLength);
   }
+
+  // Future<List<List<string>>> getProgress() async {
+  //    var progress = _prefs.getStringList(key)
+  // }
 
 }
