@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Models/phase.dart';
+import '../Models/progress.dart';
 
  class Storage {
    late SharedPreferences _prefs;
@@ -43,8 +48,16 @@ import 'package:shared_preferences/shared_preferences.dart';
     await _prefs.setDouble('stepLength', stepLength);
   }
 
-  // Future<List<List<string>>> getProgress() async {
-  //    var progress = _prefs.getStringList(key)
-  // }
+  Future<Map<Phase, Map<DateTime, List<int>>>?> getProgress() async {
+     var json = await _prefs.getString('progress');
 
+     Map<Phase, Map<DateTime, List<int>>>? progress;
+     if(json != null) {
+      progress = Progress.fromJson(jsonDecode(json)).progress;
+     }
+
+     return progress;
+  }
+
+// AddProgres??
 }
