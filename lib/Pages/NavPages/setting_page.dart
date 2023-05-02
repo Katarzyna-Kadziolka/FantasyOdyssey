@@ -60,6 +60,7 @@ class _SettingPageState extends State<SettingPage> {
     return await storage.getStepLengthAsync();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFF121212),

@@ -1,5 +1,6 @@
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
+import 'package:fantasy_odyssey/Persistence/steps_cache.dart';
 import 'package:fantasy_odyssey/Persistence/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,27 +15,32 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  final storage = Storage();
+  final _activityController = Get.put(ActivityController());
+  final _stepsCache = Get.put(StepsCache());
+
+  final _storage = Storage();
+
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
   final SavedSteps _todaySteps = SavedSteps(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
     0,
   );
-  final activityController = Get.put(ActivityController());
+
   double _todayKm = 0;
 
   @override
   initState() {
     super.initState();
-    storage.getSavedStepsAsync().then((value) => _handleStepChanged(value));
-    activityController
+    _stepsCache.getSavedStepsAsync().then((value) => _handleStepChanged(value));
+    _stepsCache.getStepsLengthAsync().then((value) => {
+      setTodaySteps(value)
+    } );
+
+    _activityController
         .getStepsAsync(_todaySteps.updateTime!)
         .then((value) => setState(() {
               _todaySteps.steps = value;
             }));
-    storage.getStepLengthAsync().then((value) => {
-      setTodaySteps(value)
-    } );
   }
 
   setTodaySteps(double stepLength) {
@@ -50,18 +56,20 @@ class _SummaryPageState extends State<SummaryPage> {
     });
 
     if (_savedSteps.updateTime == null) {
-      storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
+      _storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
     } else {
       var steps =
-          await activityController.getStepsAsync(_savedSteps.updateTime!);
-      _savedSteps = await storage.saveStepsAsync(
+          await _activityController.getStepsAsync(_savedSteps.updateTime!);
+      _savedSteps = await _storage.saveStepsAsync(
           SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
       setState(() {
         _savedSteps = _savedSteps;
       });
     }
+
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints.expand(),
@@ -93,16 +101,16 @@ class _SummaryPageState extends State<SummaryPage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Today",
                         style: TextStyle(fontSize: 15),
                       ),
                       Text(
-                        "$_todayKm km",
+                        "${_todaySteps.steps.toString()} steps",
                         style: TextStyle(fontSize: 35),
                       ),
                       Text(
-                        "${_todaySteps.steps.toString()} steps",
+                        "$_todayKm km",
                         style: TextStyle(fontSize: 22),
                       ),
                     ],
