@@ -18,7 +18,7 @@ class ActivityController extends GetxController {
     var now = DateTime.now();
     var result = await health.getTotalStepsInInterval(from.toUtc(), now.toUtc());
 
-    //fragment do usunięcia
+    //TODO fragment do usunięcia
     result = 200000;
 
 

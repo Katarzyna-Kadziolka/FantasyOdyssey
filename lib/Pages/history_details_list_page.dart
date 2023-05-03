@@ -37,7 +37,7 @@ class HistoryDetailsListPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget> [
-                Text(args.phase.text),
+                Text(args.phase),
                 for(var day in days) TextButton(
                   onPressed: () {},
                   child: Padding(

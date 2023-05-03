@@ -32,21 +32,21 @@ class _SummaryPageState extends State<SummaryPage> {
     super.initState();
     final savedSteps = _stepsCache.getSavedSteps();
     _handleStepChanged(savedSteps);
+    final stepLength = _stepsCache.getStepsLength();
 
     _activityController
         .getStepsAsync(_todaySteps.updateTime!)
         .then((value) => setState(() {
       _todaySteps.steps = value;
+      updateTodayKm(stepLength, _todaySteps.steps);
     }));
 
-    final stepsLength = _stepsCache.getStepsLength();
-    setTodaySteps(stepsLength);
   }
 
-  setTodaySteps(double stepLength) {
+  updateTodayKm(double stepLength, int steps) {
     var converter = StepsConverter(stepLength);
     setState(() {
-      _todayKm = converter.toKm(_todaySteps.steps);
+      _todayKm = converter.toKm(steps);
     });
   }
 

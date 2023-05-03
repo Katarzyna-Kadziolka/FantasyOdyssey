@@ -5,9 +5,10 @@ part 'player_progress.g.dart';
 
 @JsonSerializable()
 class PlayerProgress {
-  final Map<Phase, Map<DateTime, List<int>>> progress;
+  Map<Phase, Map<DateTime, List<int>>> progress = {};
 
-  PlayerProgress(this.progress);
+  PlayerProgress.progress(this.progress);
+  PlayerProgress();
 
   factory PlayerProgress.fromJson(Map<String, dynamic> json) => _$PlayerProgressFromJson(json);
 

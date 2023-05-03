@@ -7,16 +7,15 @@ part of 'player_progress.dart';
 // **************************************************************************
 
 PlayerProgress _$PlayerProgressFromJson(Map<String, dynamic> json) =>
-    PlayerProgress(
-      (json['progress'] as Map<String, dynamic>).map(
+    PlayerProgress()
+      ..progress = (json['progress'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(
             $enumDecode(_$PhaseEnumMap, k),
             (e as Map<String, dynamic>).map(
               (k, e) => MapEntry(DateTime.parse(k),
                   (e as List<dynamic>).map((e) => e as int).toList()),
             )),
-      ),
-    );
+      );
 
 Map<String, dynamic> _$PlayerProgressToJson(PlayerProgress instance) =>
     <String, dynamic>{
