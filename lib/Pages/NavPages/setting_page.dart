@@ -3,7 +3,7 @@ import 'package:fantasy_odyssey/Pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../Persistence/storage.dart';
+import '../../Persistence/storage_service.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   double _currentSliderValue = 75;
-  final storage = Storage();
+  final StorageService storage = Get.find();
   final List<bool> _isOpen = [false];
   final loginController = Get.put(LoginController());
 

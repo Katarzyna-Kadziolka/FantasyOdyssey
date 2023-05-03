@@ -1,19 +1,18 @@
 import 'dart:convert';
 
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Models/progress.dart';
+import '../Models/player_progress.dart';
 
- class Storage {
+
+ class StorageService extends GetxService {
    late SharedPreferences _prefs;
 
-   Storage() {
-     _initSharedPreferences();
-   }
-
-   Future<void> _initSharedPreferences() async {
+   Future<StorageService> init() async {
      _prefs = await SharedPreferences.getInstance();
+     return this;
    }
 
    SavedSteps getSavedSteps() {
@@ -47,11 +46,11 @@ import '../Models/progress.dart';
     await _prefs.setDouble('stepLength', stepLength);
   }
 
-  Progress? getProgress() {
+  PlayerProgress? getProgress() {
      var json = _prefs.getString('progress');
-     Progress? progress;
+     PlayerProgress? progress;
      if(json != null) {
-      progress = Progress.fromJson(jsonDecode(json));
+      progress = PlayerProgress.fromJson(jsonDecode(json));
      }
 
      return progress;

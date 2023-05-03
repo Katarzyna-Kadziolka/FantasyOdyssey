@@ -1,14 +1,15 @@
-import 'package:fantasy_odyssey/Persistence/storage.dart';
+import 'package:fantasy_odyssey/Persistence/storage_service.dart';
+import 'package:get/get.dart';
 
-import '../Models/progress.dart';
+import '../Models/player_progress.dart';
 import '../Models/saved_steps.dart';
 
 class Cache {
   SavedSteps? _savedSteps;
   double? _stepsLength;
-  Progress? _progress;
+  PlayerProgress? _progress;
 
-  final _storage = Storage();
+  final StorageService _storage = Get.find();
 
   SavedSteps getSavedSteps() {
     _savedSteps ??= _storage.getSavedSteps();
@@ -22,7 +23,7 @@ class Cache {
     return _stepsLength!;
   }
 
-  Progress getProgress() {
+  PlayerProgress getProgress() {
     _progress ??= _storage.getProgress();
 
     return _progress!;

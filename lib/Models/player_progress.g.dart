@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'progress.dart';
+part of 'player_progress.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Progress _$ProgressFromJson(Map<String, dynamic> json) => Progress(
+PlayerProgress _$PlayerProgressFromJson(Map<String, dynamic> json) =>
+    PlayerProgress(
       (json['progress'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(
             $enumDecode(_$PhaseEnumMap, k),
@@ -17,7 +18,8 @@ Progress _$ProgressFromJson(Map<String, dynamic> json) => Progress(
       ),
     );
 
-Map<String, dynamic> _$ProgressToJson(Progress instance) => <String, dynamic>{
+Map<String, dynamic> _$PlayerProgressToJson(PlayerProgress instance) =>
+    <String, dynamic>{
       'progress': instance.progress.map((k, e) => MapEntry(_$PhaseEnumMap[k]!,
           e.map((k, e) => MapEntry(k.toIso8601String(), e)))),
     };

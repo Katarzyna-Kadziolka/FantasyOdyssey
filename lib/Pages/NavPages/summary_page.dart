@@ -1,7 +1,7 @@
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Persistence/cache.dart';
-import 'package:fantasy_odyssey/Persistence/storage.dart';
+import 'package:fantasy_odyssey/Persistence/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +18,7 @@ class _SummaryPageState extends State<SummaryPage> {
   final _activityController = Get.put(ActivityController());
   final _stepsCache = Get.put(Cache());
 
-  final _storage = Storage();
+  final StorageService _storage = Get.find();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
   final SavedSteps _todaySteps = SavedSteps(
@@ -58,10 +58,9 @@ class _SummaryPageState extends State<SummaryPage> {
     if (_savedSteps.updateTime == null) {
       _storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
     } else {
-      var steps =
-          await _activityController.getStepsAsync(_savedSteps.updateTime!);
-      _savedSteps = await _storage.saveStepsAsync(
-          SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
+      var steps = await _activityController.getStepsAsync(_savedSteps.updateTime!);
+      _savedSteps = await _storage.saveStepsAsync(SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
+
       setState(() {
         _savedSteps = _savedSteps;
       });
@@ -95,7 +94,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    "Bagend to Rivendel",
+                    "Bag End to Rivendell",
                     style: TextStyle(fontSize: 22),
                   ),
                   Column(

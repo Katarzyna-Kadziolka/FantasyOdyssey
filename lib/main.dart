@@ -1,15 +1,21 @@
 import 'package:fantasy_odyssey/Controllers/login_controller.dart';
 import 'package:fantasy_odyssey/Pages/NavPages/main_page.dart';
+import 'package:fantasy_odyssey/Pages/history_details_list_page.dart';
 import 'package:fantasy_odyssey/Pages/login_page.dart';
+import 'package:fantasy_odyssey/Persistence/storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 
-void main() {
+Future<void> main() async {
   runApp(const MyApp());
+  await initServices();
 }
 
+Future initServices() async {
+  /// Here is where you put get_storage, hive, shared_pref initialization.
+  /// or moor connection, or whatever that's async.
+  await Get.putAsync(() => StorageService().init());
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -21,13 +27,17 @@ class MyApp extends StatelessWidget {
     Widget homeScreen = isLoggedIn ? const MainPage() : LoginPage();
 
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: LoginPage()
-      //home: homeScreen,
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        routes: {
+          HistoryDetailsListPage.routeName: (context) =>
+              const HistoryDetailsListPage(),
+        },
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        home: LoginPage()
+        //home: homeScreen,
+        );
   }
 }

@@ -1,8 +1,7 @@
-import 'package:fantasy_odyssey/Persistence/storage.dart';
+import 'package:fantasy_odyssey/Persistence/storage_service.dart';
 
 class StepsConverter {
   final kmPerStep;
-  var storage = Storage();
 
   StepsConverter(this.kmPerStep);
 
