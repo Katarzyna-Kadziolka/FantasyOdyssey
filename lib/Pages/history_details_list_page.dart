@@ -1,29 +1,16 @@
-import 'package:fantasy_odyssey/Models/phase.dart';
-import 'package:fantasy_odyssey/Models/saved_steps.dart';
-import 'package:fantasy_odyssey/Persistence/cache.dart';
+import 'package:fantasy_odyssey/Models/phases_progress.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-class HistoryPage extends StatefulWidget {
-  const HistoryPage({Key? key}) : super(key: key);
+class HistoryDetailsListPage extends StatelessWidget {
+  const HistoryDetailsListPage({Key? key}) : super(key: key);
 
-  @override
-  State<HistoryPage> createState() => _HistoryPageState();
-}
-
-class _HistoryPageState extends State<HistoryPage> {
-  final _phases = Phase.values.map((e) => e.text).toList();
-  final _stepsCache = Get.put(Cache());
-
-  @override
-  void initState() {
-    super.initState();
-    final _steps = _stepsCache.getSavedSteps().steps;
-    final _progress = _stepsCache.getProgress();
-  }
+  static const routeName = '/historyDetailsList';
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as PhasesProgress;
+    var days = args.progress.keys.map((date) => "${date.day}.${date.month}.${date.year}").toSet().toList();
+
     return Container(
       color: const Color(0xFF121212),
       child: Center(
@@ -49,13 +36,14 @@ class _HistoryPageState extends State<HistoryPage> {
             padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <TextButton> [
-                for(var phase in _phases) TextButton(
+              children: <Widget> [
+                Text(args.phase.text),
+                for(var day in days) TextButton(
                   onPressed: () {},
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Text(
-                      phase,
+                      day,
                       style: const TextStyle(color: Color(0xFFE0F2F1), fontSize: 20),
                     ),
                   ),

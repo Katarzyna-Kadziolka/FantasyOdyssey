@@ -8,6 +8,8 @@ class LoginPage extends StatelessWidget {
   final loginController = Get.put(LoginController());
   final activityController = Get.put(ActivityController());
 
+  LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +26,7 @@ class LoginPage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => const MainPage(),
                   ),
-                )
+                ),
               });
         },
         icon: Image.asset(

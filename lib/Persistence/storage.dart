@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Models/phase.dart';
 import '../Models/progress.dart';
 
  class Storage {
@@ -17,7 +16,7 @@ import '../Models/progress.dart';
      _prefs = await SharedPreferences.getInstance();
    }
 
-   Future<SavedSteps> getSavedStepsAsync() async {
+   SavedSteps getSavedSteps() {
      var steps = _prefs.getInt('steps') ?? 0;
      var timeToConvert = _prefs.getInt( 'updateTime');
 
@@ -35,12 +34,12 @@ import '../Models/progress.dart';
     return savedSteps;
   }
 
-  Future resetSteps() async {
+  Future resetStepsAsync() async {
      await _prefs.remove('steps');
      await _prefs.remove('updateTime');
   }
 
-  Future<double> getStepLengthAsync() async {
+  double getStepLength() {
     return _prefs.getDouble('stepLength') ?? 0.00075;
   }
 
@@ -48,16 +47,20 @@ import '../Models/progress.dart';
     await _prefs.setDouble('stepLength', stepLength);
   }
 
-  Future<Map<Phase, Map<DateTime, List<int>>>?> getProgress() async {
-     var json = await _prefs.getString('progress');
-
-     Map<Phase, Map<DateTime, List<int>>>? progress;
+  Progress? getProgress() {
+     var json = _prefs.getString('progress');
+     Progress? progress;
      if(json != null) {
-      progress = Progress.fromJson(jsonDecode(json)).progress;
+      progress = Progress.fromJson(jsonDecode(json));
      }
 
      return progress;
   }
 
-// AddProgres??
+  Future saveProgressAsync(Progress progress) async {
+     var json = jsonEncode(progress);
+
+     await _prefs.setString('progress', json);
+  }
+
 }

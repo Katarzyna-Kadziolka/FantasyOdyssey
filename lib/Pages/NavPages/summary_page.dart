@@ -1,6 +1,6 @@
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
-import 'package:fantasy_odyssey/Persistence/steps_cache.dart';
+import 'package:fantasy_odyssey/Persistence/cache.dart';
 import 'package:fantasy_odyssey/Persistence/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,14 +16,13 @@ class SummaryPage extends StatefulWidget {
 
 class _SummaryPageState extends State<SummaryPage> {
   final _activityController = Get.put(ActivityController());
-  final _stepsCache = Get.put(StepsCache());
+  final _stepsCache = Get.put(Cache());
 
   final _storage = Storage();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
   final SavedSteps _todaySteps = SavedSteps(
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-    0,
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day), 0,
   );
 
   double _todayKm = 0;
@@ -31,16 +30,17 @@ class _SummaryPageState extends State<SummaryPage> {
   @override
   initState() {
     super.initState();
-    _stepsCache.getSavedStepsAsync().then((value) => _handleStepChanged(value));
-    _stepsCache.getStepsLengthAsync().then((value) => {
-      setTodaySteps(value)
-    } );
+    final savedSteps = _stepsCache.getSavedSteps();
+    _handleStepChanged(savedSteps);
 
     _activityController
         .getStepsAsync(_todaySteps.updateTime!)
         .then((value) => setState(() {
-              _todaySteps.steps = value;
-            }));
+      _todaySteps.steps = value;
+    }));
+
+    final stepsLength = _stepsCache.getStepsLength();
+    setTodaySteps(stepsLength);
   }
 
   setTodaySteps(double stepLength) {

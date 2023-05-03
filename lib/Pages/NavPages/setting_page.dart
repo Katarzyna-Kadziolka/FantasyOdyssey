@@ -34,7 +34,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   void resetProgress() async {
-    await storage.resetSteps();
+    await storage.resetStepsAsync();
   }
 
   void _logOut() {
@@ -57,7 +57,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<double> _getStepLength() async {
-    return await storage.getStepLengthAsync();
+    return await storage.getStepLength();
   }
 
   @override

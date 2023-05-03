@@ -30,31 +30,34 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: currentIndex == 0 ? null : AppBar(
-        title: const Text("Fantasy Odyssey"),
-        backgroundColor: const Color(0xFF00695C),
-        automaticallyImplyLeading: false,
-      ),
+      appBar: currentIndex == 0
+          ? null
+          : AppBar(
+              title: const Text("Fantasy Odyssey"),
+              backgroundColor: const Color(0xFF00695C),
+              automaticallyImplyLeading: false,
+            ),
       body: pages.elementAt(currentIndex),
       bottomNavigationBar: BottomNavigationBar(
-          onTap: onTap,
-          currentIndex: currentIndex,
-          backgroundColor: const Color(0xFF00695C),
-          selectedItemColor: const Color(0xFFE0F2F1),
-          items: const <BottomNavigationBarItem> [
-            BottomNavigationBarItem(
-              label: "Journey",
-              icon: Icon(Icons.hiking),
-            ),
-            BottomNavigationBarItem(
-              label: "History",
-              icon: Icon(Icons.library_books),
-            ),
-            BottomNavigationBarItem(
-              label: "Setting",
-              icon: Icon(Icons.settings),
-            ),
-          ]),
+        onTap: onTap,
+        currentIndex: currentIndex,
+        backgroundColor: const Color(0xFF00695C),
+        selectedItemColor: const Color(0xFFE0F2F1),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            label: "Journey",
+            icon: Icon(Icons.hiking),
+          ),
+          BottomNavigationBarItem(
+            label: "History",
+            icon: Icon(Icons.library_books),
+          ),
+          BottomNavigationBarItem(
+            label: "Setting",
+            icon: Icon(Icons.settings),
+          ),
+        ],
+      ),
     );
   }
 }
