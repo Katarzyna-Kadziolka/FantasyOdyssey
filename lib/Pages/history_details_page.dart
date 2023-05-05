@@ -9,17 +9,22 @@ class HistoryDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final events = ModalRoute.of(context)!.settings.arguments as List<HistoryEvent>;
+    final events =
+        ModalRoute.of(context)!.settings.arguments as List<HistoryEvent>;
 
-
-    return Container(
-        color: const Color(0xFF121212),
-        child: Column(
-        children: <Widget> [
-          for(var event in events)
-            Text(event.distance.toString())
-        ],
-      )
+    return Scaffold(
+      body: Container(
+          color: const Color(0xFF121212),
+          child: ListView(
+            children: <Widget>[
+              for (var event in events)
+                Text(
+                  event.distance.toString(),
+                  style:
+                      const TextStyle(color: Color(0xFFE0F2F1), fontSize: 20),
+                )
+            ],
+          )),
     );
   }
 }
