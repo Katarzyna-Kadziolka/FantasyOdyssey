@@ -1,4 +1,5 @@
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
+import 'package:fantasy_odyssey/Models/phase.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Pages/achievement_page.dart';
 import 'package:fantasy_odyssey/Persistence/cache.dart';
@@ -25,6 +26,8 @@ class _SummaryPageState extends State<SummaryPage> {
   final StorageService _storage = Get.find();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
+  var _currrentPhase = "";
+  var _currentPhaseProgress = "";
   final SavedSteps _todaySteps = SavedSteps(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
     0,
@@ -49,22 +52,51 @@ class _SummaryPageState extends State<SummaryPage> {
       steps = 0;
     } else {
       steps = await _activityController.getStepsAsync(savedSteps.updateTime!);
-      stepsToSave = SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps);
+      stepsToSave =
+          SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps);
     }
     await _storage.saveStepsAsync(stepsToSave);
     setState(() {
       _savedSteps = stepsToSave;
       _todaySteps.steps = steps;
       _todayKm = Get.find<StepsConverter>().toKm(steps);
+      var lastEvent = Events()
+          .events
+          .lastWhereOrNull((element) => element.distance < Get.find<StepsConverter>().toKm(steps));
+      _currrentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
+      _currentPhaseProgress = getCurrentPhaseProgress(steps);
     });
     await handleProgressChanged(_savedSteps.steps + steps).then((value) => {
-      if (value.isNotEmpty)
-          Navigator.pushNamed(
-            context,
-            AchievementPage.routeName,
-            arguments: value,
-          )
+          if (value.isNotEmpty)
+            Navigator.pushNamed(
+              context,
+              AchievementPage.routeName,
+              arguments: value,
+            )
         });
+  }
+
+  String getCurrentPhaseProgress(int totalStep) {
+    var allEvents = Events().events;
+    var totalKm = Get.find<StepsConverter>().toKm(totalStep);
+    var currentPhase =
+        allEvents.lastWhere((element) => element.distance < totalKm).phase;
+    var currentPhaseIndex = Phase.values.indexOf(currentPhase);
+    double distanceToLastPhaseLastEvent = 0;
+    if (currentPhaseIndex != 0) {
+      var lastPhase = Phase.values[currentPhaseIndex - 1];
+      distanceToLastPhaseLastEvent = allEvents
+          .lastWhere((element) => element.phase == lastPhase)
+          .distance;
+    }
+    var currentKmInPhase = totalKm - distanceToLastPhaseLastEvent;
+    var kmToEndOfPhase = allEvents
+            .lastWhere((element) => element.phase == currentPhase)
+            .distance -
+        allEvents
+            .firstWhere((element) => element.phase == currentPhase)
+            .distance;
+    return "Total: ${currentKmInPhase.toStringAsFixed(2)} km (${((currentKmInPhase * 100) / kmToEndOfPhase).toStringAsFixed(2)}%)";
   }
 
   Future<List<HistoryEvent>> handleProgressChanged(int steps) async {
@@ -93,9 +125,12 @@ class _SummaryPageState extends State<SummaryPage> {
               allEvents.indexWhere((element) => element.distance == e.distance))
           .toList();
       if (savedProgress!.progress.containsKey(phase)) {
-        savedProgress.progress[phase]!.addAll({DateUtils.dateOnly(DateTime.now()): eventsToAdd});
+        savedProgress.progress[phase]!
+            .addAll({DateUtils.dateOnly(DateTime.now()): eventsToAdd});
       } else {
-        savedProgress.progress[phase] = {DateUtils.dateOnly(DateTime.now()): eventsToAdd};
+        savedProgress.progress[phase] = {
+          DateUtils.dateOnly(DateTime.now()): eventsToAdd
+        };
       }
     });
     await _storage.savePlayerProgressAsync(savedProgress);
@@ -128,7 +163,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    "Bag End to Rivendell",
+                    _currrentPhase,
                     style: TextStyle(fontSize: 22),
                   ),
                   Column(
@@ -149,7 +184,7 @@ class _SummaryPageState extends State<SummaryPage> {
                     ],
                   ),
                   Text(
-                    "Total: 30 km (6%)",
+                    _currentPhaseProgress,
                     style: TextStyle(fontSize: 15),
                   )
                 ],
