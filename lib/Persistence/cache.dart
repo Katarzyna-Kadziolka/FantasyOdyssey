@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../Models/player_progress.dart';
 import '../Models/saved_steps.dart';
 
-class Cache {
+class Cache extends GetxService {
   SavedSteps? _savedSteps;
   double? _stepsLength;
   PlayerProgress? _progress;
@@ -31,5 +31,11 @@ class Cache {
     _progress ??= PlayerProgress();
 
     return _progress!;
+  }
+
+  Future resetProgressAsync() async {
+    await _storage.resetProgressAsync();
+    _savedSteps = null;
+    _progress = null;
   }
 }

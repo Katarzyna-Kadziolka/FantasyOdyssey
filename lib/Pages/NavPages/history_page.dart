@@ -16,16 +16,16 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   final _phaseNames = Phase.values.map((e) => e.text).toList();
-  final _stepsCache = Get.put(Cache());
+  final Cache _cache = Get.find();
   PlayerProgress _progress = PlayerProgress();
 
   @override
   void initState() {
     super.initState();
-    final _steps = _stepsCache
+    final _steps = _cache
         .getSavedSteps()
         .steps;
-    _progress = _stepsCache.getProgress();
+    _progress = _cache.getProgress();
   }
 
   @override

@@ -1,5 +1,9 @@
+import 'dart:collection';
+
+import 'package:fantasy_odyssey/Controllers/events_controller.dart';
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
+import 'package:fantasy_odyssey/Pages/achievement_page.dart';
 import 'package:fantasy_odyssey/Persistence/cache.dart';
 import 'package:fantasy_odyssey/Persistence/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -20,62 +24,55 @@ class SummaryPage extends StatefulWidget {
 
 class _SummaryPageState extends State<SummaryPage> {
   final _activityController = Get.put(ActivityController());
-  final _stepsCache = Get.put(Cache());
+  final Cache _cache = Get.find();
   final StorageService _storage = Get.find();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
   final SavedSteps _todaySteps = SavedSteps(
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day), 0,
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+    0,
   );
 
   double _todayKm = 0;
-  List<HistoryEvent> _events = [];
 
   @override
   initState() {
     super.initState();
-    final stepLength = _stepsCache.getStepsLength();
+    final stepLength = _cache.getStepsLength();
     Get.put(StepsConverter(stepLength));
-    final savedSteps = _stepsCache.getSavedSteps();
+    final savedSteps = _cache.getSavedSteps();
     _handleStepChanged(savedSteps);
-
-    _activityController
-        .getStepsAsync(_todaySteps.updateTime!)
-        .then((value) => setState(() {
-      _todaySteps.steps = value;
-      updateTodayKm(stepLength, _todaySteps.steps);
-    }));
-
-  }
-
-  updateTodayKm(double stepLength, int steps) {
-    StepsConverter converter = Get.find();
-    setState(() {
-      _todayKm = converter.toKm(steps);
-    });
   }
 
   Future _handleStepChanged(SavedSteps savedSteps) async {
-    setState(() {
-      _savedSteps = savedSteps;
-    });
-
-    if (_savedSteps.updateTime == null) {
-      _storage.saveStepsAsync(SavedSteps(DateTime.now(), 0));
+    int steps;
+    SavedSteps stepsToSave;
+    if (savedSteps.updateTime == null) {
+      stepsToSave = SavedSteps(DateTime.now(), 0);
+      steps = 0;
     } else {
-      var steps = await _activityController.getStepsAsync(_savedSteps.updateTime!);
-      _savedSteps = await _storage.saveStepsAsync(SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps));
-      _events = await handleProgressChanged(_savedSteps.steps + steps);
-
-      setState(() {
-        _savedSteps = _savedSteps;
-      });
+      steps = await _activityController.getStepsAsync(savedSteps.updateTime!);
+      stepsToSave = SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps);
     }
+    await _storage.saveStepsAsync(stepsToSave);
+    setState(() {
+      _savedSteps = stepsToSave;
+      _todaySteps.steps = steps;
+      _todayKm = Get.find<StepsConverter>().toKm(steps);
+    });
+    await handleProgressChanged(_savedSteps.steps + steps).then((value) => {
+      if (value.isNotEmpty)
+          Navigator.pushNamed(
+            context,
+            AchievementPage.routeName,
+            arguments: Queue<HistoryEvent>.from(value),
+          )
+        });
   }
 
   Future<List<HistoryEvent>> handleProgressChanged(int steps) async {
     var savedProgress = _storage.getPlayerProgress();
-    if(savedProgress == null) savedProgress = PlayerProgress();
+    savedProgress ??= PlayerProgress();
     double kmLastEvent = 0;
     var allEvents = Events().events;
     if (savedProgress.progress.isNotEmpty) {
@@ -86,16 +83,22 @@ class _SummaryPageState extends State<SummaryPage> {
     }
     StepsConverter converter = Get.find();
     var newFullKm = converter.toKm(steps);
-    var oldEvents = allEvents.where((element) => element.distance <= kmLastEvent);
+    var oldEvents =
+        allEvents.where((element) => element.distance <= kmLastEvent);
     var newEvents = allEvents.where((element) => element.distance <= newFullKm);
-    var eventsToDisplay = newEvents.where((element) => oldEvents.every((x) => x != element)).toList();
+    var eventsToDisplay = newEvents
+        .where((element) => oldEvents.every((x) => x != element))
+        .toList();
     var grouped = groupBy(eventsToDisplay, (x) => x.phase);
     grouped.forEach((phase, events) {
-      var eventsToAdd  = events.map((e) => allEvents.indexWhere((element) => element.distance == e.distance)).toList();
+      var eventsToAdd = events
+          .map((e) =>
+              allEvents.indexWhere((element) => element.distance == e.distance))
+          .toList();
       if (savedProgress!.progress.containsKey(phase)) {
-        savedProgress.progress[phase]!.addAll({DateTime.now() : eventsToAdd});
+        savedProgress.progress[phase]!.addAll({DateTime.now(): eventsToAdd});
       } else {
-        savedProgress.progress[phase] = {DateTime.now() : eventsToAdd};
+        savedProgress.progress[phase] = {DateTime.now(): eventsToAdd};
       }
     });
     await _storage.savePlayerProgressAsync(savedProgress);

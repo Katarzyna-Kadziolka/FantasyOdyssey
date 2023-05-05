@@ -1,5 +1,6 @@
 import 'package:fantasy_odyssey/Controllers/login_controller.dart';
 import 'package:fantasy_odyssey/Pages/login_page.dart';
+import 'package:fantasy_odyssey/Persistence/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   double _currentSliderValue = 75;
   final StorageService storage = Get.find();
+  final Cache cache = Get.find();
   final List<bool> _isOpen = [false];
   final loginController = Get.put(LoginController());
 
@@ -33,8 +35,8 @@ class _SettingPageState extends State<SettingPage> {
     return value / 100000;
   }
 
-  void resetProgress() async {
-    await storage.resetStepsAsync();
+  Future resetProgress() async {
+    await cache.resetProgressAsync();
   }
 
   void _logOut() {
@@ -103,7 +105,7 @@ class _SettingPageState extends State<SettingPage> {
                     body: Container(
                       margin: const EdgeInsets.only(bottom: 25),
                       child: TextButton(
-                        onPressed: () => resetProgress(),
+                        onPressed: () async => await resetProgress(),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.resolveWith(
                               (states) => const Color(0xFF302c2c)),

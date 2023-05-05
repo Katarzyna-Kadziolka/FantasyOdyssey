@@ -27,15 +27,15 @@ import '../Models/player_progress.dart';
      return SavedSteps(updateTime, steps);
   }
 
-  Future<SavedSteps> saveStepsAsync(SavedSteps savedSteps) async {
+  Future saveStepsAsync(SavedSteps savedSteps) async {
     await _prefs.setInt('steps', savedSteps.steps);
     await _prefs.setInt('updateTime', savedSteps.updateTime!.millisecondsSinceEpoch);
-    return savedSteps;
   }
 
-  Future resetStepsAsync() async {
+  Future resetProgressAsync() async {
      await _prefs.remove('steps');
      await _prefs.remove('updateTime');
+     await _prefs.remove('progress');
   }
 
   double getStepLength() {
