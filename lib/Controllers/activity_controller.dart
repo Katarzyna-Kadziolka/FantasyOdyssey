@@ -9,12 +9,6 @@ class ActivityController extends GetxController {
 
     HealthFactory health = HealthFactory();
 
-    var types = [
-      HealthDataType.STEPS,
-    ];
-
-    bool requested = await health.requestAuthorization(types);
-
     var now = DateTime.now();
     var result = await health.getTotalStepsInInterval(from.toUtc(), now.toUtc());
 
