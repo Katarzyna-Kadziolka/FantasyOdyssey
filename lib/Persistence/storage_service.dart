@@ -46,7 +46,7 @@ import '../Models/player_progress.dart';
     await _prefs.setDouble('stepLength', stepLength);
   }
 
-  PlayerProgress? getProgress() {
+  PlayerProgress? getPlayerProgress() {
      var json = _prefs.getString('progress');
      PlayerProgress? progress;
      if(json != null) {
@@ -56,10 +56,8 @@ import '../Models/player_progress.dart';
      return progress;
   }
 
-  Future saveProgressAsync(Progress progress) async {
+  Future savePlayerProgressAsync(PlayerProgress progress) async {
      var json = jsonEncode(progress);
-
      await _prefs.setString('progress', json);
   }
-
 }

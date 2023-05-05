@@ -24,7 +24,7 @@ class Cache {
   }
 
   PlayerProgress getProgress() {
-    var savedProgress = _storage.getProgress();
+    var savedProgress = _storage.getPlayerProgress();
     if (savedProgress != null) {
       _progress = savedProgress;
     }

@@ -22,28 +22,15 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    final _steps = _stepsCache.getSavedSteps().steps;
+    final _steps = _stepsCache
+        .getSavedSteps()
+        .steps;
     _progress = _stepsCache.getProgress();
   }
 
   @override
   Widget build(BuildContext context) {
     var unlockedButton = ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith(
-          (states) => const Color(0xFF302c2c)),
-      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
-          side: const BorderSide(
-            color: Color(0xFF3c4038),
-          ),
-        ),
-      ),
-      minimumSize: MaterialStateProperty.all(
-        Size(MediaQuery.of(context).size.width - 20, 40),
-      ),
-    );
-    var lockedButton = ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith(
               (states) => const Color(0xFF302c2c)),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -55,7 +42,28 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ),
       minimumSize: MaterialStateProperty.all(
-        Size(MediaQuery.of(context).size.width - 20, 40),
+        Size(MediaQuery
+            .of(context)
+            .size
+            .width - 20, 40),
+      ),
+    );
+    var lockedButton = ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith(
+              (states) => const Color(0xFF3c4038)),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+          side: const BorderSide(
+            color: Color(0xFF3c4038),
+          ),
+        ),
+      ),
+      minimumSize: MaterialStateProperty.all(
+        Size(MediaQuery
+            .of(context)
+            .size
+            .width - 20, 40),
       ),
     );
     return Container(
@@ -75,16 +83,17 @@ class _HistoryPageState extends State<HistoryPage> {
                   child: ElevatedButton(
                     onPressed: getProgressForPhase(phaseName) == null
                         ? null
-                        : () => {
-                              Navigator.pushNamed(
-                                context,
-                                HistoryDetailsListPage.routeName,
-                                arguments: PhasesProgress(
-                                  phaseName,
-                                  getProgressForPhase(phaseName) ?? {},
-                                ),
-                              )
-                            },
+                        : () =>
+                    {
+                      Navigator.pushNamed(
+                        context,
+                        HistoryDetailsListPage.routeName,
+                        arguments: PhasesProgress(
+                          phaseName,
+                          getProgressForPhase(phaseName) ?? {},
+                        ),
+                      )
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
@@ -104,5 +113,5 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Map<DateTime, List<int>>? getProgressForPhase(String phaseName) =>
       _progress.progress[
-          Phase.values.firstWhere((element) => element.text == phaseName)];
+      Phase.values.firstWhere((element) => element.text == phaseName)];
 }
