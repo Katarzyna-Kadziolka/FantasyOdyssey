@@ -14,17 +14,49 @@ class HistoryDetailsPage extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-          color: const Color(0xFF121212),
-          child: ListView(
-            children: <Widget>[
-              for (var event in events)
-                Text(
-                  event.distance.toString(),
-                  style:
-                      const TextStyle(color: Color(0xFFE0F2F1), fontSize: 20),
-                )
-            ],
-          )),
+        color: const Color(0xFF121212),
+        child: ListView(
+          padding: const EdgeInsets.only(
+              left: 10.0, right: 10.0, top: 50, bottom: 25),
+          children: <Widget>[
+            for (var event in events)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00695C),
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            "${event.distance.toString()} km",
+                            style: const TextStyle(
+                                color: Color(0xFFE0F2F1),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Text(
+                          event.description,
+                          style: const TextStyle(
+                            color: Color(0xFFE0F2F1),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
