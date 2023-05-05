@@ -1,7 +1,6 @@
 import 'package:fantasy_odyssey/Models/phase.dart';
 import 'package:fantasy_odyssey/Models/phases_progress.dart';
 import 'package:fantasy_odyssey/Models/player_progress.dart';
-import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Pages/history_details_list_page.dart';
 import 'package:fantasy_odyssey/Persistence/cache.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +21,6 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    final _steps = _cache
-        .getSavedSteps()
-        .steps;
     _progress = _cache.getProgress();
   }
 
@@ -50,7 +46,7 @@ class _HistoryPageState extends State<HistoryPage> {
     );
     var lockedButton = ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith(
-              (states) => const Color(0xFF3c4038)),
+              (states) => const Color(0xFF302c2c).withOpacity(0.3)),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),

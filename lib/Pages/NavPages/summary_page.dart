@@ -65,7 +65,7 @@ class _SummaryPageState extends State<SummaryPage> {
           Navigator.pushNamed(
             context,
             AchievementPage.routeName,
-            arguments: Queue<HistoryEvent>.from(value),
+            arguments: value,
           )
         });
   }
@@ -96,9 +96,9 @@ class _SummaryPageState extends State<SummaryPage> {
               allEvents.indexWhere((element) => element.distance == e.distance))
           .toList();
       if (savedProgress!.progress.containsKey(phase)) {
-        savedProgress.progress[phase]!.addAll({DateTime.now(): eventsToAdd});
+        savedProgress.progress[phase]!.addAll({DateUtils.dateOnly(DateTime.now()): eventsToAdd});
       } else {
-        savedProgress.progress[phase] = {DateTime.now(): eventsToAdd};
+        savedProgress.progress[phase] = {DateUtils.dateOnly(DateTime.now()): eventsToAdd};
       }
     });
     await _storage.savePlayerProgressAsync(savedProgress);
