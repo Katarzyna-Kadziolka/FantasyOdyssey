@@ -71,25 +71,12 @@ class _SettingPageState extends State<SettingPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(children: [
-                Text(
-                  "Step length: ${_currentSliderValue.toStringAsFixed(0)} cm",
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Slider(
-                  value: _currentSliderValue,
-                  min: 65,
-                  max: 85,
-                  divisions: 20,
-                  label: _currentSliderValue.round().toString(),
-                  onChanged: (double value) => saveStepLength(value),
-                  activeColor: const Color(0xFF00695C),
-                ),
-              ]),
               ExpansionPanelList(
                 children: [
                   ExpansionPanel(
+                    canTapOnHeader: true,
                     headerBuilder: (context, isOpen) {
                       return Container(
                         margin: const EdgeInsets.all(15),
@@ -106,16 +93,13 @@ class _SettingPageState extends State<SettingPage> {
                       margin: const EdgeInsets.only(bottom: 25),
                       child: TextButton(
                         onPressed: () async => await resetProgress(),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.resolveWith(
-                              (states) => const Color(0xFF302c2c)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              side: const BorderSide(
-                                color: Color(0xFF3c4038),
-                              ),
+                        style: TextButton.styleFrom(
+                          backgroundColor: const Color(0xFF302c2c),
+                          fixedSize: const Size(300, 25),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: const BorderSide(
+                              color: Color(0xFF3c4038),
                             ),
                           ),
                         ),
@@ -136,17 +120,30 @@ class _SettingPageState extends State<SettingPage> {
                   _isOpen[i] = !isOpen;
                 }),
               ),
+              Column(children: [
+                Text(
+                  "Step length: ${_currentSliderValue.toStringAsFixed(0)} cm",
+                  style: const TextStyle(fontSize: 20),
+                ),
+                Slider(
+                  value: _currentSliderValue,
+                  min: 65,
+                  max: 85,
+                  divisions: 20,
+                  label: _currentSliderValue.round().toString(),
+                  onChanged: (double value) => saveStepLength(value),
+                  activeColor: const Color(0xFF00695C),
+                ),
+              ]),
               TextButton(
                 onPressed: () => _logOut(),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                      (states) => const Color(0xFF302c2c)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3c4038),
-                      ),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFF302c2c),
+                  fixedSize: const Size(300, 25),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: const BorderSide(
+                      color: Color(0xFF3c4038),
                     ),
                   ),
                 ),
