@@ -1,6 +1,3 @@
-import 'dart:collection';
-
-import 'package:fantasy_odyssey/Controllers/events_controller.dart';
 import 'package:fantasy_odyssey/Converters/steps-converter.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Pages/achievement_page.dart';
