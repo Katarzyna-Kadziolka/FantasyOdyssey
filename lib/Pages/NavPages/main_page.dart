@@ -1,7 +1,6 @@
 import 'package:fantasy_odyssey/Pages/NavPages/setting_page.dart';
 import 'package:fantasy_odyssey/Pages/NavPages/summary_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import 'history_page.dart';
 

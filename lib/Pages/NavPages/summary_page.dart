@@ -71,7 +71,7 @@ class _SummaryPageState extends State<SummaryPage> {
       _todayKm = Get.find<StepsConverter>().toKm(steps);
       var lastEvent = Events().events.lastWhereOrNull((element) =>
           element.distance < Get.find<StepsConverter>().toKm(steps));
-      _currentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
+      _currentPhase = lastEvent?.phase.text ?? Phase.bagEndToRivendell.text;
       _currentPhaseProgress = getCurrentPhaseProgress(savedSteps.steps + steps);
       _nextEventText = getNextEventText(savedSteps.steps + steps);
     });
@@ -156,6 +156,11 @@ class _SummaryPageState extends State<SummaryPage> {
     return eventsToDisplay;
   }
 
+  Future<void> onRefresh() async {
+    final savedSteps = _cache.getSavedSteps();
+    await _handleStepChanged(savedSteps);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -166,77 +171,84 @@ class _SummaryPageState extends State<SummaryPage> {
             fit: BoxFit.cover),
       ),
       alignment: Alignment.bottomCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: 100),
-            child: Visibility(
-              visible: _isLoading,
-              child: Container(
-                height: 100,
-                width: 250,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text("Loading steps from Google fit", style: TextStyle(color: Colors.white),),
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 250,
-            width: 250,
-            margin: const EdgeInsets.only(bottom: 50),
-            child: Card(
-              color: const Color(0xFF00695C).withOpacity(0.5),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25)),
-              child: DefaultTextStyle(
-                style: const TextStyle(color: Color(0xFFE0F2F1)),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        _currentPhase,
-                        style: TextStyle(fontSize: 22),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Today",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          Text(
-                            "${_todaySteps.steps.toString()} steps",
-                            style: TextStyle(fontSize: 35),
-                          ),
-                          Text(
-                            "$_todayKm km",
-                            style: TextStyle(fontSize: 22),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        _currentPhaseProgress,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      Text(
-                        _nextEventText,
-                        style: TextStyle(fontSize: 15),
-                      )
-                    ],
+      child: RefreshIndicator(
+        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+        onRefresh: onRefresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 100),
+                child: Visibility(
+                  visible: _isLoading,
+                  child: Container(
+                    height: 100,
+                    width: 250,
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text("Loading steps from Google fit", style: TextStyle(color: Colors.white),),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              Container(
+                height: 250,
+                width: 250,
+                margin: const EdgeInsets.only(bottom: 50),
+                child: Card(
+                  color: const Color(0xFF00695C).withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25)),
+                  child: DefaultTextStyle(
+                    style: const TextStyle(color: Color(0xFFE0F2F1)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            _currentPhase,
+                            style: TextStyle(fontSize: 22),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Today",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(
+                                "${_todaySteps.steps.toString()} steps",
+                                style: TextStyle(fontSize: 35),
+                              ),
+                              Text(
+                                "$_todayKm km",
+                                style: TextStyle(fontSize: 22),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            _currentPhaseProgress,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          Text(
+                            _nextEventText,
+                            style: TextStyle(fontSize: 15),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
