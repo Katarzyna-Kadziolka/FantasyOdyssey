@@ -2,6 +2,7 @@ import 'package:fantasy_odyssey/Controllers/activity_controller.dart';
 import 'package:fantasy_odyssey/Controllers/login_controller.dart';
 import 'package:fantasy_odyssey/Pages/NavPages/main_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
@@ -29,8 +30,8 @@ class LoginPage extends StatelessWidget {
         child: Center(
             child: FloatingActionButton.extended(
           onPressed: () {
-            loginController.login().whenComplete(
-                  () => {
+            loginController.login().then(
+                  (_) => {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -38,7 +39,12 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                   },
-                );
+                ).catchError((e) {
+                  if (e is PlatformException) {
+                    var snackBar = SnackBar(content: Text("Error during login: ${e.code} - ${e.message} - ${e.details}"), backgroundColor: Colors.redAccent,);
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+            });
           },
           icon: Image.asset(
             'images/google_logo.png',
