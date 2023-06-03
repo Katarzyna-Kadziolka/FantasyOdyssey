@@ -33,6 +33,11 @@ class Cache extends GetxService {
     return _progress!;
   }
 
+  void clearCache() {
+    _savedSteps = null;
+    _progress = null;
+  }
+
   Future resetProgressAsync() async {
     await _storage.resetProgressAsync();
     _savedSteps = null;

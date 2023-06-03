@@ -15,10 +15,12 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   double _currentSliderValue = 75;
+  double _currentUpdateStepsInputValue = 0;
   final StorageService storage = Get.find();
   final Cache cache = Get.find();
-  final List<bool> _isOpen = [false];
+  final List<bool> _isOpen = [false, false];
   final loginController = Get.put(LoginController());
+  final StorageService _storage = Get.find();
 
   void saveStepLength(double value) async {
     await storage.saveStepLengthAsync(toKm(value));
@@ -39,27 +41,34 @@ class _SettingPageState extends State<SettingPage> {
     await cache.resetProgressAsync();
   }
 
+  Future updateProgress() async {
+    var steps = cache.getSavedSteps();
+    steps.updateTime = DateTime.now();
+    steps.steps = (_currentUpdateStepsInputValue * 100000) ~/ _currentSliderValue;
+    await _storage.saveStepsAsync(steps);
+    cache.clearCache();
+  }
+
   void _logOut() {
-    loginController.logout().whenComplete(() => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-          )
-        });
+    loginController.logout().whenComplete(() => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        ));
   }
 
   @override
   void initState() {
     super.initState();
-    _getStepLength().then((value) => setState(() {
-          _currentSliderValue = toCm(value);
-        }));
+    var stepLength = _getStepLength();
+    setState(() {
+      _currentSliderValue = toCm(stepLength);
+    });
   }
 
-  Future<double> _getStepLength() async {
-    return await storage.getStepLength();
+  double _getStepLength() {
+    return storage.getStepLength();
   }
 
   @override
@@ -115,9 +124,71 @@ class _SettingPageState extends State<SettingPage> {
                     isExpanded: _isOpen[0],
                     backgroundColor: const Color(0xFF282424),
                   ),
+                  ExpansionPanel(
+                    canTapOnHeader: true,
+                    headerBuilder: (context, isOpen) {
+                      return Container(
+                        margin: const EdgeInsets.all(15),
+                        child: const Text(
+                          "Developer zone",
+                          style: TextStyle(
+                            color: Color(0xFFE0F2F1),
+                            fontSize: 17,
+                          ),
+                        ),
+                      );
+                    },
+                    body: Container(
+                      margin: const EdgeInsets.only(bottom: 25),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(color: Color(0xFFE0F2F1)),
+                              onChanged: (value) => setState(() {
+                                _currentUpdateStepsInputValue =
+                                    double.parse(value);
+                              }),
+                              decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Color(0xFFE0F2F1))),
+                                  hintText: 'Distance in km',
+                                  hintStyle:
+                                      TextStyle(color: Color(0xFFE0F2F1))),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async => await updateProgress(),
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFF302c2c),
+                              fixedSize: const Size(300, 25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                side: const BorderSide(
+                                  color: Color(0xFF3c4038),
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'Set progress',
+                              style: TextStyle(
+                                  color: Color(0xFFE0F2F1),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    isExpanded: _isOpen.isEmpty ? false : _isOpen[1],
+                    backgroundColor: const Color(0xFF282424),
+                  ),
                 ],
-                expansionCallback: (i, isOpen) => setState(() {
-                  _isOpen[i] = !isOpen;
+                expansionCallback: (i, isExpanded) => setState(() {
+                  _isOpen[i] = !isExpanded;
                 }),
               ),
               Column(children: [

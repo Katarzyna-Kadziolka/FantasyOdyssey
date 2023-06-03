@@ -62,7 +62,7 @@ class _SummaryPageState extends State<SummaryPage> {
         _isLoading = false;
       });
       stepsToSave =
-          SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps);
+          SavedSteps(savedSteps.updateTime!, savedSteps.steps + steps);
     }
     await _storage.saveStepsAsync(stepsToSave);
     setState(() {
@@ -72,8 +72,8 @@ class _SummaryPageState extends State<SummaryPage> {
       var lastEvent = Events().events.lastWhereOrNull((element) =>
           element.distance < Get.find<StepsConverter>().toKm(steps));
       _currentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
-      _currentPhaseProgress = getCurrentPhaseProgress(steps);
-      _nextEventText = getNextEventText(steps);
+      _currentPhaseProgress = getCurrentPhaseProgress(savedSteps.steps + steps);
+      _nextEventText = getNextEventText(savedSteps.steps + steps);
     });
     await handleProgressChanged(_savedSteps.steps + steps).then((value) => {
           if (value.isNotEmpty)
