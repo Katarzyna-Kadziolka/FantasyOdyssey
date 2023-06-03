@@ -80,7 +80,7 @@ class _SummaryPageState extends State<SummaryPage> {
     var allEvents = Events().events;
     var totalKm = Get.find<StepsConverter>().toKm(totalStep);
     var currentPhase =
-        allEvents.lastWhere((element) => element.distance < totalKm).phase;
+        allEvents.lastWhereOrNull((element) => element.distance < totalKm)?.phase ?? Phase.bagEndToRivendell;
     var currentPhaseIndex = Phase.values.indexOf(currentPhase);
     double distanceToLastPhaseLastEvent = 0;
     if (currentPhaseIndex != 0) {
