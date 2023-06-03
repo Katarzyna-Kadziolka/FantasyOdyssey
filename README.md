@@ -1,1 +1,3 @@
 # FantasyOdyssey
+
+Password: fantasy
