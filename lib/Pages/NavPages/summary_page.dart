@@ -26,14 +26,16 @@ class _SummaryPageState extends State<SummaryPage> {
   final StorageService _storage = Get.find();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
-  var _currrentPhase = "";
+  var _currentPhase = "";
   var _currentPhaseProgress = "";
+  var _nextEventText = "";
   final SavedSteps _todaySteps = SavedSteps(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
     0,
   );
 
   double _todayKm = 0;
+
 
   @override
   initState() {
@@ -63,8 +65,9 @@ class _SummaryPageState extends State<SummaryPage> {
       var lastEvent = Events()
           .events
           .lastWhereOrNull((element) => element.distance < Get.find<StepsConverter>().toKm(steps));
-      _currrentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
+      _currentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
       _currentPhaseProgress = getCurrentPhaseProgress(steps);
+      _nextEventText = getNextEventText(steps);
     });
     await handleProgressChanged(_savedSteps.steps + steps).then((value) => {
           if (value.isNotEmpty)
@@ -76,9 +79,18 @@ class _SummaryPageState extends State<SummaryPage> {
         });
   }
 
-  String getCurrentPhaseProgress(int totalStep) {
+  String getNextEventText(int totalSteps) {
     var allEvents = Events().events;
-    var totalKm = Get.find<StepsConverter>().toKm(totalStep);
+    var totalKm = Get.find<StepsConverter>().toKm(totalSteps);
+    var nextEvent = allEvents.firstWhere((element) => element.distance > totalKm);
+    var distanceToNextEvent = nextEvent.distance - totalKm;
+    return "Next: ${distanceToNextEvent.toStringAsFixed(2)} km";
+  }
+
+
+  String getCurrentPhaseProgress(int totalSteps) {
+    var allEvents = Events().events;
+    var totalKm = Get.find<StepsConverter>().toKm(totalSteps);
     var currentPhase =
         allEvents.lastWhereOrNull((element) => element.distance < totalKm)?.phase ?? Phase.bagEndToRivendell;
     var currentPhaseIndex = Phase.values.indexOf(currentPhase);
@@ -163,7 +175,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    _currrentPhase,
+                    _currentPhase,
                     style: TextStyle(fontSize: 22),
                   ),
                   Column(
@@ -186,6 +198,10 @@ class _SummaryPageState extends State<SummaryPage> {
                   Text(
                     _currentPhaseProgress,
                     style: TextStyle(fontSize: 15),
+                  ),
+                  Text(
+                    _nextEventText,
+                    style: TextStyle(fontSize: 15),
                   )
                 ],
               ),
@@ -195,4 +211,5 @@ class _SummaryPageState extends State<SummaryPage> {
       ),
     );
   }
+
 }
