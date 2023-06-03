@@ -29,6 +29,7 @@ class _SummaryPageState extends State<SummaryPage> {
   var _currentPhase = "";
   var _currentPhaseProgress = "";
   var _nextEventText = "";
+  var _isLoading = false;
   final SavedSteps _todaySteps = SavedSteps(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
     0,
@@ -53,7 +54,13 @@ class _SummaryPageState extends State<SummaryPage> {
       stepsToSave = SavedSteps(DateTime.now(), 0);
       steps = 0;
     } else {
+      setState(() {
+        _isLoading = true;
+      });
       steps = await _activityController.getStepsAsync(savedSteps.updateTime!);
+      setState(() {
+        _isLoading = false;
+      });
       stepsToSave =
           SavedSteps(_savedSteps.updateTime!, _savedSteps.steps + steps);
     }
@@ -62,9 +69,8 @@ class _SummaryPageState extends State<SummaryPage> {
       _savedSteps = stepsToSave;
       _todaySteps.steps = steps;
       _todayKm = Get.find<StepsConverter>().toKm(steps);
-      var lastEvent = Events()
-          .events
-          .lastWhereOrNull((element) => element.distance < Get.find<StepsConverter>().toKm(steps));
+      var lastEvent = Events().events.lastWhereOrNull((element) =>
+          element.distance < Get.find<StepsConverter>().toKm(steps));
       _currentPhase = lastEvent?.phase?.text ?? Phase.bagEndToRivendell.text;
       _currentPhaseProgress = getCurrentPhaseProgress(steps);
       _nextEventText = getNextEventText(steps);
@@ -82,24 +88,25 @@ class _SummaryPageState extends State<SummaryPage> {
   String getNextEventText(int totalSteps) {
     var allEvents = Events().events;
     var totalKm = Get.find<StepsConverter>().toKm(totalSteps);
-    var nextEvent = allEvents.firstWhere((element) => element.distance > totalKm);
+    var nextEvent =
+        allEvents.firstWhere((element) => element.distance > totalKm);
     var distanceToNextEvent = nextEvent.distance - totalKm;
     return "Next: ${distanceToNextEvent.toStringAsFixed(2)} km";
   }
 
-
   String getCurrentPhaseProgress(int totalSteps) {
     var allEvents = Events().events;
     var totalKm = Get.find<StepsConverter>().toKm(totalSteps);
-    var currentPhase =
-        allEvents.lastWhereOrNull((element) => element.distance < totalKm)?.phase ?? Phase.bagEndToRivendell;
+    var currentPhase = allEvents
+            .lastWhereOrNull((element) => element.distance < totalKm)
+            ?.phase ??
+        Phase.bagEndToRivendell;
     var currentPhaseIndex = Phase.values.indexOf(currentPhase);
     double distanceToLastPhaseLastEvent = 0;
     if (currentPhaseIndex != 0) {
       var lastPhase = Phase.values[currentPhaseIndex - 1];
-      distanceToLastPhaseLastEvent = allEvents
-          .lastWhere((element) => element.phase == lastPhase)
-          .distance;
+      distanceToLastPhaseLastEvent =
+          allEvents.lastWhere((element) => element.phase == lastPhase).distance;
     }
     var currentKmInPhase = totalKm - distanceToLastPhaseLastEvent;
     var kmToEndOfPhase = allEvents
@@ -159,57 +166,78 @@ class _SummaryPageState extends State<SummaryPage> {
             fit: BoxFit.cover),
       ),
       alignment: Alignment.bottomCenter,
-      child: Container(
-        height: 250,
-        width: 250,
-        margin: const EdgeInsets.only(bottom: 50),
-        child: Card(
-          color: const Color(0xFF00695C).withOpacity(0.5),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-          child: DefaultTextStyle(
-            style: const TextStyle(color: Color(0xFFE0F2F1)),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    _currentPhase,
-                    style: TextStyle(fontSize: 22),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Today",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                      Text(
-                        "${_todaySteps.steps.toString()} steps",
-                        style: TextStyle(fontSize: 35),
-                      ),
-                      Text(
-                        "$_todayKm km",
-                        style: TextStyle(fontSize: 22),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    _currentPhaseProgress,
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  Text(
-                    _nextEventText,
-                    style: TextStyle(fontSize: 15),
-                  )
-                ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: 100),
+            child: Visibility(
+              visible: _isLoading,
+              child: Container(
+                height: 100,
+                width: 250,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text("Loading steps from Google fit", style: TextStyle(color: Colors.white),),
+                    CircularProgressIndicator(),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+          Container(
+            height: 250,
+            width: 250,
+            margin: const EdgeInsets.only(bottom: 50),
+            child: Card(
+              color: const Color(0xFF00695C).withOpacity(0.5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25)),
+              child: DefaultTextStyle(
+                style: const TextStyle(color: Color(0xFFE0F2F1)),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        _currentPhase,
+                        style: TextStyle(fontSize: 22),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Today",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          Text(
+                            "${_todaySteps.steps.toString()} steps",
+                            style: TextStyle(fontSize: 35),
+                          ),
+                          Text(
+                            "$_todayKm km",
+                            style: TextStyle(fontSize: 22),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        _currentPhaseProgress,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Text(
+                        _nextEventText,
+                        style: TextStyle(fontSize: 15),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-
 }
