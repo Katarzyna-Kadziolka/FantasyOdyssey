@@ -27,7 +27,7 @@ class _SummaryPageState extends State<SummaryPage> {
   var _currentPhaseProgress = "";
   var _nextEventText = "";
   var _isLoading = false;
-  int _stepsSinceLastUpdate = 0;
+  int _stepsToday = 0;
 
   double _todayKm = 0;
 
@@ -55,13 +55,15 @@ class _SummaryPageState extends State<SummaryPage> {
         _isLoading = false;
       });
       stepsToSave =
-          SavedSteps(savedSteps.updateTime!, savedSteps.steps + steps);
+          SavedSteps(DateTime.now(), savedSteps.steps + steps);
     }
     await _cache.saveStepsAsync(stepsToSave);
     var stepsConverter = Get.find<StepsConverter>();
+    var stepsToday = await _activityController.getStepsAsync(DateUtils.dateOnly(DateTime.now()));
+
     setState(() {
       _savedSteps = stepsToSave;
-      _stepsSinceLastUpdate = steps;
+      _stepsToday = stepsToday;
       _todayKm = Get.find<StepsConverter>().toKm(steps);
       var lastEvent = Events().events.lastWhereOrNull((element) {
         return element.distance < stepsConverter.toKm(steps);
@@ -217,11 +219,11 @@ class _SummaryPageState extends State<SummaryPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                "Since last update",
+                                "Today",
                                 style: TextStyle(fontSize: 15),
                               ),
                               Text(
-                                "${_stepsSinceLastUpdate.toString()} steps",
+                                "${_stepsToday.toString()} steps",
                                 style: const TextStyle(fontSize: 35),
                               ),
                               Text(
