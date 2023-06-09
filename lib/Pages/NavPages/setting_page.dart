@@ -16,14 +16,13 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   double _currentSliderValue = 75;
   double _currentUpdateStepsInputValue = 0;
-  final StorageService storage = Get.find();
   final Cache cache = Get.find();
   final List<bool> _isOpen = [false, false];
   final loginController = Get.put(LoginController());
   final StorageService _storage = Get.find();
 
   void saveStepLength(double value) async {
-    await storage.saveStepLengthAsync(toKm(value));
+    await cache.saveStepLengthAsync(toKm(value));
     setState(() {
       _currentSliderValue = value;
     });
@@ -45,7 +44,7 @@ class _SettingPageState extends State<SettingPage> {
     var steps = cache.getSavedSteps();
     steps.updateTime = DateTime.now();
     steps.steps = (_currentUpdateStepsInputValue * 100000) ~/ _currentSliderValue;
-    await _storage.saveStepsAsync(steps);
+    await cache.saveStepsAsync(steps);
     cache.clearCache();
   }
 
@@ -68,7 +67,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   double _getStepLength() {
-    return storage.getStepLength();
+    return cache.getStepsLength();
   }
 
   @override

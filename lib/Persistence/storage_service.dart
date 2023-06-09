@@ -28,6 +28,7 @@ import '../Models/player_progress.dart';
   }
 
   Future saveStepsAsync(SavedSteps savedSteps) async {
+
     await _prefs.setInt('steps', savedSteps.steps);
     await _prefs.setInt('updateTime', savedSteps.updateTime!.millisecondsSinceEpoch);
   }

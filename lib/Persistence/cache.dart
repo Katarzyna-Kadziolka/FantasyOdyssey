@@ -43,4 +43,19 @@ class Cache extends GetxService {
     _savedSteps = null;
     _progress = null;
   }
+
+  Future saveStepsAsync(SavedSteps stepsToSave) async {
+    _savedSteps = stepsToSave;
+    await _storage.saveStepsAsync(stepsToSave);
+  }
+
+  Future savePlayerProgress(PlayerProgress savedProgress) async {
+    _progress = savedProgress;
+    await _storage.savePlayerProgressAsync(savedProgress);
+  }
+
+  Future saveStepLengthAsync(double stepsLength) async {
+    _stepsLength = stepsLength;
+    await _storage.saveStepLengthAsync(stepsLength);
+  }
 }

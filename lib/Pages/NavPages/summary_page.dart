@@ -23,7 +23,6 @@ class SummaryPage extends StatefulWidget {
 class _SummaryPageState extends State<SummaryPage> {
   final _activityController = Get.put(ActivityController());
   final Cache _cache = Get.find();
-  final StorageService _storage = Get.find();
 
   SavedSteps _savedSteps = SavedSteps(DateTime.now(), 0);
   var _currentPhase = "";
@@ -64,13 +63,15 @@ class _SummaryPageState extends State<SummaryPage> {
       stepsToSave =
           SavedSteps(savedSteps.updateTime!, savedSteps.steps + steps);
     }
-    await _storage.saveStepsAsync(stepsToSave);
+    await _cache.saveStepsAsync(stepsToSave);
+    var stepsConverter = Get.find<StepsConverter>();
     setState(() {
       _savedSteps = stepsToSave;
       _todaySteps.steps = steps;
       _todayKm = Get.find<StepsConverter>().toKm(steps);
-      var lastEvent = Events().events.lastWhereOrNull((element) =>
-          element.distance < Get.find<StepsConverter>().toKm(steps));
+      var lastEvent = Events().events.lastWhereOrNull((element) {
+        return element.distance < stepsConverter.toKm(steps);
+      });
       _currentPhase = lastEvent?.phase.text ?? Phase.bagEndToRivendell.text;
       _currentPhaseProgress = getCurrentPhaseProgress(savedSteps.steps + steps);
       _nextEventText = getNextEventText(savedSteps.steps + steps);
@@ -119,7 +120,7 @@ class _SummaryPageState extends State<SummaryPage> {
   }
 
   Future<List<HistoryEvent>> handleProgressChanged(int steps) async {
-    var savedProgress = _storage.getPlayerProgress();
+    var savedProgress = _cache.getProgress();
     savedProgress ??= PlayerProgress();
     double kmLastEvent = 0;
     var allEvents = Events().events;
@@ -152,7 +153,7 @@ class _SummaryPageState extends State<SummaryPage> {
         };
       }
     });
-    await _storage.savePlayerProgressAsync(savedProgress);
+    await _cache.savePlayerProgress(savedProgress);
     return eventsToDisplay;
   }
 
@@ -219,7 +220,7 @@ class _SummaryPageState extends State<SummaryPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                "Today",
+                                "Since last update",
                                 style: TextStyle(fontSize: 15),
                               ),
                               Text(
