@@ -3,7 +3,6 @@ import 'package:fantasy_odyssey/Models/phase.dart';
 import 'package:fantasy_odyssey/Models/saved_steps.dart';
 import 'package:fantasy_odyssey/Pages/achievement_page.dart';
 import 'package:fantasy_odyssey/Persistence/cache.dart';
-import 'package:fantasy_odyssey/Persistence/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collection/collection.dart';
@@ -11,7 +10,6 @@ import 'package:collection/collection.dart';
 import '../../Controllers/activity_controller.dart';
 import '../../Models/Events/events.dart';
 import '../../Models/history_event.dart';
-import '../../Models/player_progress.dart';
 
 class SummaryPage extends StatefulWidget {
   const SummaryPage({Key? key}) : super(key: key);
@@ -29,13 +27,9 @@ class _SummaryPageState extends State<SummaryPage> {
   var _currentPhaseProgress = "";
   var _nextEventText = "";
   var _isLoading = false;
-  final SavedSteps _todaySteps = SavedSteps(
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-    0,
-  );
+  int _stepsSinceLastUpdate = 0;
 
   double _todayKm = 0;
-
 
   @override
   initState() {
@@ -67,7 +61,7 @@ class _SummaryPageState extends State<SummaryPage> {
     var stepsConverter = Get.find<StepsConverter>();
     setState(() {
       _savedSteps = stepsToSave;
-      _todaySteps.steps = steps;
+      _stepsSinceLastUpdate = steps;
       _todayKm = Get.find<StepsConverter>().toKm(steps);
       var lastEvent = Events().events.lastWhereOrNull((element) {
         return element.distance < stepsConverter.toKm(steps);
@@ -121,7 +115,6 @@ class _SummaryPageState extends State<SummaryPage> {
 
   Future<List<HistoryEvent>> handleProgressChanged(int steps) async {
     var savedProgress = _cache.getProgress();
-    savedProgress ??= PlayerProgress();
     double kmLastEvent = 0;
     var allEvents = Events().events;
     if (savedProgress.progress.isNotEmpty) {
@@ -160,6 +153,10 @@ class _SummaryPageState extends State<SummaryPage> {
   Future<void> onRefresh() async {
     final savedSteps = _cache.getSavedSteps();
     await _handleStepChanged(savedSteps);
+    const snackBar = SnackBar(content: Text("Steps updated"), backgroundColor: Color(0xFF004a40), duration: Duration(milliseconds: 500),);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -181,7 +178,7 @@ class _SummaryPageState extends State<SummaryPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: EdgeInsets.only(bottom: 100),
+                padding: const EdgeInsets.only(bottom: 100),
                 child: Visibility(
                   visible: _isLoading,
                   child: Container(
@@ -214,7 +211,7 @@ class _SummaryPageState extends State<SummaryPage> {
                         children: [
                           Text(
                             _currentPhase,
-                            style: TextStyle(fontSize: 22),
+                            style: const TextStyle(fontSize: 22),
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -224,22 +221,22 @@ class _SummaryPageState extends State<SummaryPage> {
                                 style: TextStyle(fontSize: 15),
                               ),
                               Text(
-                                "${_todaySteps.steps.toString()} steps",
-                                style: TextStyle(fontSize: 35),
+                                "${_stepsSinceLastUpdate.toString()} steps",
+                                style: const TextStyle(fontSize: 35),
                               ),
                               Text(
                                 "$_todayKm km",
-                                style: TextStyle(fontSize: 22),
+                                style: const TextStyle(fontSize: 22),
                               ),
                             ],
                           ),
                           Text(
                             _currentPhaseProgress,
-                            style: TextStyle(fontSize: 15),
+                            style: const TextStyle(fontSize: 15),
                           ),
                           Text(
                             _nextEventText,
-                            style: TextStyle(fontSize: 15),
+                            style: const TextStyle(fontSize: 15),
                           )
                         ],
                       ),
