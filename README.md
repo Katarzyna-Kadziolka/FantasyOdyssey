@@ -4,7 +4,7 @@ A mobile app that allows the user to accompany Frodo on his journey to Mount Doo
 
 Written using Dart and Flutter.
 
-
+![FantasyOdyssey](https://github.com/Katarzyna-Kadziolka/FantasyOdyssey/assets/62292047/394e90ac-6bdb-47a2-b7df-84e9912e8c71)
 
 ### Features
 
